@@ -2,20 +2,17 @@
  Práctica: sistema.test master y slave
 
 **1. Activa solamente la escucha del servidor para el protocolo IPv4.**
-
     En el servidor Tierra:  
         ```
         cd /etc/default  
         sudo nano named
         ``` 
-        Se cambia la línea: `OPTIONS="-u bind -4"`  
-        
+        Se cambia la línea: `OPTIONS="-u bind -4"`   
     Se copia el archivo named a la capeta compartida para añadirlo a la provisión:  
         En máquina: `cp named /etc/files/tierra/`  
         En provisión: `cp -v /files/tierra/named /etc/default`  
 
 **2. Establecer la opción dnssec-validation a yes**
-
     En el servidor Tierra:  
     `sudo nano /etc/bind/named.conf.options`  
     Se modifican las siguientes líneas:  
@@ -25,7 +22,6 @@
         ```  
 
 **3. Los servidores permitirán las consultas recursivas sólo a los ordenadores en la red 127.0.0.0/8 y en la red 192.168.57.0/24, para ello utilizarán la opción de listas de control de acceso o acl.**
-
     En el servidor Tierra:  
     Primeramente, realizar una copia de seguridad: `sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup`  
     Se edita el archivo named.conf.options de la siguiente manera:  
@@ -34,28 +30,22 @@
         127.0.0.0/8;  
         192.168.57.0/24;  
     };
-
     options {  
         directory "/var/cache/bind";  
-
         // forwarders {  
         //      0.0.0.0;  
         // };  
-
         // Para tierra:
         listen-on port 53 { 192.168.57.103; };  
         // Para venus:  
         // listen-on port 53 { 192.168.57.102; }; 
-
         recursion yes;  
         allow-recursion { confiables; };  
-
         //========================================================================  
         // If BIND logs error messages about the root key being expired,  
         // you will need to update your keys.  See https://www.isc.org/bind-keys  
         //========================================================================  
         dnssec-validation yes;  
-
         //listen-on-v6 { any; };  
     };  
     ```
@@ -71,7 +61,6 @@
         En provisión: `cp -v /files/tierra/named.conf.options /etc/bind`
 
 **4. El servidor maestro será tierra.sistema.test y tendrá autoridad sobre la zona directa e inversa.**
-
     En el servidor Tierra:  
     Primeramente, realizar una copia de seguridad: `sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup`  
     Se edita el archivo: `sudo nano /etc/bind/named.conf.local` para añadir ambas zonas.  
@@ -80,16 +69,13 @@
     //  
     // Do any local configuration here  
     //  
-
     // Consider adding the 1918 zones here, if they are not used in your  
     // organization  
     //include "/etc/bind/zones.rfc1918";
-
     zone "solarsystem.es" {  
         type master;  
         file "/var/lib/bind/solarsystem.es.dns";  
     };
-    
     zone "57.168.192.in-addr-arpa" {  
         type master;  
         file "/var/lib/bind/solarsystem.es.rev";  
@@ -113,7 +99,6 @@
     debian.solarsystem.es.      IN      A       192.168.57.103
     ```
     Comprobación: `named-checkzone solarsystem.es /var/lib/bind/solarsystem.es.dns`
-
     Para la zona inversa se crea el archivo con el nombre indicado anteriormente en el siguiente directorio: `sudo nano /var/lib/bind/solarsystem.es.rev`  
     Se edita el archivo de la siguiente forma:
     ```
@@ -148,7 +133,6 @@
         ```
 
 **5. El servidor esclavo será venus.sistema.test y tendrá como maestro a tierra.sistema.test.**
-  
     En el servidor Venus:  
     Se edita el archivo: `sudo nano /etc/bind/named.conf.local`  
     Se indica el nombre de la zona, el tipo, servidor maestro y el archivo:  
@@ -156,17 +140,14 @@
     //
     // Do any local configuration here
     //
-
     // Consider adding the 1918 zones here, if they are not used in your
     // organization
     //include "/etc/bind/zones.rfc1918";
-
     zone "solarsystem.es" {
         type slave;
         masters { 192.168.57.103; };
         file "/var/lib/bind/solarsystem.es.dns";
     };
-
     zone "57.168.192.in-addr-arpa" {
         type slave;
         masters { 192.168.57.103; };
@@ -174,7 +155,6 @@
     };
     ```  
     `sudo systemctl restart bind9`  
-
     En el servidor Tierra:  
     `sudo nano /etc/bind/named.conf.local`
     Se añade el servidor esclavo y se activa la notificación de cambios:
@@ -182,18 +162,15 @@
     //
     // Do any local configuration here
     //  
-
     // Consider adding the 1918 zones here, if they are not used in your
     // organization
     //include "/etc/bind/zones.rfc1918";
-
     zone "solarsystem.es" {
         type master;
         file "/var/lib/bind/solarsystem.es.dns";  
         allow-transfer { 192.168.57.102; };
         notify yes;
-    };
-    
+    };   
     zone "57.168.192.in-addr-arpa" {
         type master;
         file "/var/lib/bind/solarsystem.es.rev";
@@ -218,7 +195,6 @@
     dns1.solarsystem.es             IN      A       192.168.57.102
     ```
     `sudo systemctl restart bind9`  
-
     Se copia los archivos a la carpeta compartida y se añaden a la provisión  
         En máquina tierra:  
         ```
@@ -235,7 +211,6 @@
         ```
 
 **6. El tiempo en caché de las respuestas negativas de las zonas (directa e inversa) será de dos horas (se pone en segundos).**
-
     En Tierra se editan los archivos `solarsystem.es.dns` y `solarsystem.es.rev` en la siguiente línea:  
         `7200 )      ; Negative Cache TTL`  
     Se reinicia bind para aplicar cambios: `sudo systemctl restart bind9`  
@@ -259,7 +234,6 @@
 
 **8. Se configurarán los siguientes alias:**
     **a. ns1.sistema.test. será un alias de tierra.sistema.test.**
-
     `sudo nano /var/lib/bind/solarsystem.es.dns`
     Se incrementa el número de serie para notificar la acutalización y se añade el alias:
     ```
@@ -280,9 +254,7 @@
     dns1.solarsystem.es             IN      A       192.168.57.102
     ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
     ```
-
     **b. ns2.sistema.test. será un alias de venus.sistema.test.**
-
     `sudo nano /var/lib/bind/solarsystem.es.dns`
     Se incrementa el número de serie para notificar la acutalización y se añade el alias:
     ```
@@ -303,7 +275,6 @@
     dns1.solarsystem.es             IN      A       192.168.57.102
     ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
     ns2.sistema.test                IN      CNAME   dns1.solarsystem.es.  
-
     ```
     Se reinicia el servicio:
         `sudo systemctl restart bind9`
