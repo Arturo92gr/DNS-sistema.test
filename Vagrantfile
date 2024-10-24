@@ -15,11 +15,11 @@ Vagrant.configure("2") do |config|
       apt-get install -y bind9 dnsutils
     SHELL
     tierra.vm.provision "shell", inline: <<-SHELL
-      cp -v /files/named /etc/default
-      cp -v /files/named.conf.options /etc/bind
-      cp -v /files/named.conf.local /etc/bind
-      cp -v /files/solarsystem.es.dns /var/lib
-      cp -v /files/solarsystem.es.rev /var/lib
+      cp -v /files/tierra/named /etc/default
+      cp -v /files/tierra/named.conf.options /etc/bind
+      cp -v /files/tierra/named.conf.local /etc/bind
+      cp -v /files/tierra/solarsystem.es.dns /var/lib
+      cp -v /files/tierra/solarsystem.es.rev /var/lib
     SHELL
   end #master
 
@@ -29,7 +29,10 @@ Vagrant.configure("2") do |config|
     venus.vm.network "private_network", ip: "192.168.57.102"
     venus.vm.provision "shell", inline: <<-SHELL
       apt-get update
-      apt-get install -y dnsutils
+      apt-get install -y bind9 dnsutils
+    SHELL
+    venus.vm.provision "shell", inline: <<-SHELL
+      cp -v /files/venus/named.conf.local /etc/bind 
     SHELL
   end #slave
 

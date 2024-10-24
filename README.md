@@ -10,11 +10,12 @@
         ``` 
         Se cambia la línea: `OPTIONS="-u bind -4"`  
     Se copia el archivo named a la capeta compartida para añadirlo a la provisión:  
-        En máquina: `cp named /etc/files/`  
-        En provisión: `cp -v /files/named /etc/default`  
+        En máquina: `cp named /etc/files/tierra/`  
+        En provisión: `cp -v /files/tierra/named /etc/default`  
 
 2. Establecer la opción dnssec-validation a yes
 
+    En el servidor Tierra:  
     `sudo nano /etc/bind/named.conf.options`  
     Se modifican las siguientes líneas:  
         ```
@@ -24,6 +25,7 @@
 
 3. Los servidores permitirán las consultas recursivas sólo a los ordenadores en la red 127.0.0.0/8 y en la red 192.168.57.0/24, para ello utilizarán la opción de listas de control de acceso o acl.
 
+    En el servidor Tierra:  
     Primeramente, realizar una copia de seguridad: `sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup`  
     Se edita el archivo named.conf.options de la siguiente manera:  
     ```
@@ -64,11 +66,12 @@
     systemctl status named  
     ```
     Se copia el archivo a la carpeta compartida y se añade a la provisión  
-        En máquina: `cp /etc/bind/named.conf.options /etc/files/`  
-        En provisión: `cp -v /files/named.conf.options /etc/bind`
+        En máquina: `cp /etc/bind/named.conf.options /etc/files/tierra/`  
+        En provisión: `cp -v /files/tierra/named.conf.options /etc/bind`
 
 4. El servidor maestro será tierra.sistema.test y tendrá autoridad sobre la zona directa e inversa.
 
+    En el servidor Tierra:  
     Primeramente, realizar una copia de seguridad: `sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup`  
     Se edita el archivo: `sudo nano /etc/bind/named.conf.local` para añadir ambas zonas.  
     Se indica el nombre de la zona, el tipo y el archivo:  
@@ -132,20 +135,103 @@
     Se copia los archivos a la carpeta compartida y se añaden a la provisión  
         En máquina:  
         ```
-        cp /etc/bind/named.conf.local /etc/files/  
-        cp /var/lib/bind/solarsystem.es.dns /etc/files/  
-        cp /var/lib/bind/solarsystem.es.rev /etc/files/  
-        ```
+        cp /etc/bind/named.conf.local /etc/files/tierra/  
+        cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/  
+        cp /var/lib/bind/solarsystem.es.rev /etc/files/tierra/
+        ```  
         En provisión:  
         ```
-        cp -v /files/named.conf.local /etc/bind  
-        cp -v /files/solarsystem.es.dns /var/lib  
-        cp -v /files/solarsystem.es.rev /var/lib
+        cp -v /files/tierra/named.conf.local /etc/bind  
+        cp -v /files/tierra/solarsystem.es.dns /var/lib  
+        cp -v /files/tierra/solarsystem.es.rev /var/lib
         ```
 
 5. El servidor esclavo será venus.sistema.test y tendrá como maestro a tierra.sistema.test.
+  
+    En el servidor Venus:  
+    Se edita el archivo: `sudo nano /etc/bind/named.conf.local`  
+    Se indica el nombre de la zona, el tipo, servidor maestro y el archivo:  
+    ```
+    //
+    // Do any local configuration here
+    //
 
+    // Consider adding the 1918 zones here, if they are not used in your
+    // organization
+    //include "/etc/bind/zones.rfc1918";
 
+    zone "solarsystem.es" {
+        type slave;
+        masters { 192.168.57.103; };
+        file "/var/lib/bind/solarsystem.es.dns";
+    };
+
+    zone "57.168.192.in-addr-arpa" {
+        type slave;
+        masters { 192.168.57.103; };
+        file "/var/lib/bind/solarsystem.es.rev";
+    };
+    ```  
+    `sudo systemctl restart bind9`  
+
+    En el servidor Tierra:  
+    `sudo nano /etc/bind/named.conf.local`
+    Se añade el servidor esclavo y se activa la notificación de cambios:
+    ```
+    //
+    // Do any local configuration here
+    //  
+
+    // Consider adding the 1918 zones here, if they are not used in your
+    // organization
+    //include "/etc/bind/zones.rfc1918";
+
+    zone "solarsystem.es" {
+        type master;
+        file "/var/lib/bind/solarsystem.es.dns";  
+        allow-transfer { 192.168.57.102; };
+        notify yes;
+    };
+    
+    zone "57.168.192.in-addr-arpa" {
+        type master;
+        file "/var/lib/bind/solarsystem.es.rev";
+    };
+    ```
+    Se añade otro servidor DNS para la zona: `sudo nano /var/lib/bind/solarsystem.es.dns`  
+    ```
+    ;                                                                                              ;
+    ; solarsystem.es
+    ;
+    $TTL 86400
+    @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
+            2024102401  ; Serial
+            3600        ; Refresh
+            1800        ; Retry
+            604800      ; Expire
+            86400 )     ; Negative Cache TTL
+    ;
+    @                               IN      NS      debian.solarsystem.es.
+    debian.solarsystem.es.          IN      A       192.168.57.103
+    solarsystem.es                  IN      NS      dns1.solarsystem.es
+    dns1.solarsystem.es             IN      A       192.168.57.102
+    ```
+    `sudo systemctl restart bind9`  
+
+    Se copia los archivos a la carpeta compartida y se añaden a la provisión  
+        En máquina tierra:  
+        ```
+        cp /etc/bind/named.conf.local /etc/files/tierra/  
+        cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/    
+        ```  
+        En máquina venus:  
+        ``` 
+        cp /etc/bind/named.conf.local /etc/files/venus/  
+        ```  
+        En provisión venus:  
+        ```
+        cp -v /files/venus/named.conf.local /etc/bind  
+        ```
 
 6. El tiempo en caché de las respuestas negativas de las zonas (directa e inversa) será de dos horas (se pone en segundos).
 

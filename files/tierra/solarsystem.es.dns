@@ -1,0 +1,15 @@
+;
+; solarsystem.es
+;
+$TTL 86400
+@ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
+        2024102401  ; Serial
+        3600        ; Refresh
+        1800        ; Retry
+        604800      ; Expire
+	86400 )     ; Negative Cache TTL
+;
+@				IN      NS      debian.solarsystem.es.
+debian.solarsystem.es.		IN      A       192.168.57.103
+solarsystem.es			IN	NS	dns1.solarsystem.es
+dns1.solarsystem.es		IN	A	192.168.57.102
