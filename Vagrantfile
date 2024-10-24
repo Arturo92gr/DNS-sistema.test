@@ -16,6 +16,7 @@ Vagrant.configure("2") do |config|
     SHELL
     tierra.vm.provision "shell", inline: <<-SHELL
       cp -v /files/named /etc/default 
+      cp -v /files/named.conf.options /etc/bind
     SHELL
   end #master
 
