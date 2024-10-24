@@ -20,10 +20,7 @@
         ```
         dnssec-validation yes;  
         //listen-on-v6 { any; };  
-        ```
-    Se vuelve a copiar el archivo a la carpeta compartida para añadirlo a la provisión  
-        En máquina: `cp /etc/bind/named.conf.options /etc/files/`  
-        En provisión: `cp -v /files/named.conf.options /etc/bind`  
+        ```  
 
 3. Los servidores permitirán las consultas recursivas sólo a los ordenadores en la red 127.0.0.0/8 y en la red 192.168.57.0/24, para ello utilizarán la opción de listas de control de acceso o acl.
 
@@ -42,7 +39,10 @@
         //      0.0.0.0;  
         // };  
 
+        // Para tierra:
         listen-on port 53 { 192.168.57.103; };  
+        // Para venus:  
+        // listen-on port 53 { 192.168.57.102; }; 
 
         recursion yes;  
         allow-recursion { confiables; };  
@@ -56,10 +56,78 @@
         //listen-on-v6 { any; };  
     };  
     ```
+    Para comprobar si es correcta la configuración:  
+    `named-checkconf /etc/bind/named.conf.options`  
+    Por último, se reinicia el servidor y se comprueba su estado:  
+    ```
+    systemctl restart named  
+    systemctl status named  
+    ```
+    Se copia el archivo a la carpeta compartida y se añade a la provisión  
+        En máquina: `cp /etc/bind/named.conf.options /etc/files/`  
+        En provisión: `cp -v /files/named.conf.options /etc/bind`
 
 4. El servidor maestro será tierra.sistema.test y tendrá autoridad sobre la zona directa e inversa.
 
+    Primeramente, realizar una copia de seguridad: `sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup`  
+    Se edita el archivo: `sudo nano /etc/bind/named.conf.local` para añadir ambas zonas.  
+    Se indica el nombre de la zona, el tipo y el archivo:  
+    ```
+    //  
+    // Do any local configuration here  
+    //  
 
+    // Consider adding the 1918 zones here, if they are not used in your  
+    // organization  
+    //include "/etc/bind/zones.rfc1918";
+
+    zone "solarsystem.es" {  
+        type master;  
+        file "/var/lib/bind/solarsystem.es.dns";  
+    };
+    
+    zone "57.168.192.in-addr-arpa" {  
+        type master;  
+        file "/var/lib/bind/solarsystem.es.rev";  
+    };  
+    ```
+    Para la zona directa se crea el archivo con el nombre indicado anteriormente en el siguiente directorio: `sudo nano /var/lib/bind/solarsystem.es.dns`  
+    Se edita el archivo de la siguiente forma:
+    ```
+    ;
+    ; solarsystem.es
+    ;
+    $TTL 86400
+    @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
+        2024102401  ; Serial
+        3600        ; Refresh
+        1800        ; Retry
+        604800      ; Expire
+        86400 )     ; Negative Cache TTL
+    ;
+    @                           IN      NS      debian.solarsystem.es.
+    debian.solarsystem.es.      IN      A       192.168.57.103
+    ```
+    Comprobación: `named-checkzone solarsystem.es /var/lib/bind/solarsystem.es.dns`
+
+    Para la zona directa se crea el archivo con el nombre indicado anteriormente en el siguiente directorio: `sudo nano /var/lib/bind/solarsystem.es.rev`  
+    Se edita el archivo de la siguiente forma:
+    ```
+    ;  
+    ; 57.168.192  
+    ;  
+    $TTL 86400  
+    @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (  
+        2024102401  ; Serial  
+        3600        ; Refresh  
+        1800        ; Retry  
+        604800      ; Expire  
+        86400 )     ; Negative Cache TTL  
+    ;  
+    @       IN      NS      debian.solarsystem.es.  
+    103     IN      PTR     debian.solarsystem.es.  
+    ```
+    Comprobación: `named-checkzone solarsystem.es /var/lib/bind/solarsystem.es.rev`
 
 5. El servidor esclavo será venus.sistema.test y tendrá como maestro a tierra.sistema.test.
 

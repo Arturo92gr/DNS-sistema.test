@@ -10,7 +10,10 @@ options {
 	// 	0.0.0.0;
 	// };
 
-	listen-on port 53 { 192.168.57.103; };
+	// Para tierra:
+        listen-on port 53 { 192.168.57.103; };  
+        // Para venus:  
+        // listen-on port 53 { 192.168.57.102; }; 
 
 	recursion yes;
 	allow-recursion { confiables; };
