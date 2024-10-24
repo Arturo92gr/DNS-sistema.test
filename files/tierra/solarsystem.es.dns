@@ -3,7 +3,7 @@
 ;
 $TTL 86400
 @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
-        2024102403  ; Serial
+        2024102404  ; Serial
         3600        ; Refresh
         1800        ; Retry
         604800      ; Expire
@@ -15,3 +15,5 @@ solarsystem.es			IN	NS	dns1.solarsystem.es
 dns1.solarsystem.es		IN	A	192.168.57.102
 ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
 ns2.sistema.test                IN      CNAME   dns1.solarsystem.es.
+marte.sistema.test		IN	A	192.168.57.104
+mail.sistema.test		IN	CNAME	marte.sistema.test

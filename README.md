@@ -50,7 +50,7 @@
         //listen-on-v6 { any; };
     };
     ```
-    
+
     Para comprobar si es correcta la configuración:  
     `named-checkconf /etc/bind/named.conf.options`  
     Por último, se reinicia el servidor y se comprueba su estado:  
@@ -284,9 +284,33 @@
         `cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/`
 
 **9. mail.sistema.test. será un alias de marte.sistema.test.**  
-
-
+    `sudo nano /var/lib/bind/solarsystem.es.dns`
+    Se incrementa el número de serie para notificar la acutalización y se añade el registro A y CNAME para marte:
+    ```
+    ;
+    ; solarsystem.es
+    ;
+    $TTL 86400
+    @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
+        2024102404  ; Serial
+        3600        ; Refresh
+        1800        ; Retry
+        604800      ; Expire
+        7200 )     ; Negative Cache TTL
+    ;
+    @                               IN      NS      debian.solarsystem.es.
+    debian.solarsystem.es.          IN      A       192.168.57.103
+    solarsystem.es                  IN      NS      dns1.solarsystem.es
+    dns1.solarsystem.es             IN      A       192.168.57.102
+    ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
+    ns2.sistema.test                IN      CNAME   dns1.solarsystem.es.  
+    marte.sistema.test              IN      A       192.168.57.104
+    mail.sistema.test               IN      CNAME   marte.sistema.test
+    ```
+    Se reinicia el servicio:
+        `sudo systemctl restart bind9`
+    Se copia el archivo a la carpeta compartida:
+        `cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/`
 
 **10. El equipo marte.sistema.test. actuará como servidor de correo del dominio de correo sistema.test.**  
-
-
+    
