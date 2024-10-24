@@ -1,7 +1,7 @@
 # DNS_sistema.test
  Práctica: sistema.test master y slave
 
-1. Activa solamente la escucha del servidor para el protocolo IPv4.
+### 1. Activa solamente la escucha del servidor para el protocolo IPv4.
 
     En el servidor Tierra:  
         ```
@@ -13,7 +13,7 @@
         En máquina: `cp named /etc/files/tierra/`  
         En provisión: `cp -v /files/tierra/named /etc/default`  
 
-2. Establecer la opción dnssec-validation a yes
+### 2. Establecer la opción dnssec-validation a yes
 
     En el servidor Tierra:  
     `sudo nano /etc/bind/named.conf.options`  
@@ -23,7 +23,7 @@
         //listen-on-v6 { any; };  
         ```  
 
-3. Los servidores permitirán las consultas recursivas sólo a los ordenadores en la red 127.0.0.0/8 y en la red 192.168.57.0/24, para ello utilizarán la opción de listas de control de acceso o acl.
+### 3. Los servidores permitirán las consultas recursivas sólo a los ordenadores en la red 127.0.0.0/8 y en la red 192.168.57.0/24, para ello utilizarán la opción de listas de control de acceso o acl.
 
     En el servidor Tierra:  
     Primeramente, realizar una copia de seguridad: `sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup`  
@@ -69,7 +69,7 @@
         En máquina: `cp /etc/bind/named.conf.options /etc/files/tierra/`  
         En provisión: `cp -v /files/tierra/named.conf.options /etc/bind`
 
-4. El servidor maestro será tierra.sistema.test y tendrá autoridad sobre la zona directa e inversa.
+### 4. El servidor maestro será tierra.sistema.test y tendrá autoridad sobre la zona directa e inversa.
 
     En el servidor Tierra:  
     Primeramente, realizar una copia de seguridad: `sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup`  
@@ -146,7 +146,7 @@
         cp -v /files/tierra/solarsystem.es.rev /var/lib
         ```
 
-5. El servidor esclavo será venus.sistema.test y tendrá como maestro a tierra.sistema.test.
+### 5. El servidor esclavo será venus.sistema.test y tendrá como maestro a tierra.sistema.test.
   
     En el servidor Venus:  
     Se edita el archivo: `sudo nano /etc/bind/named.conf.local`  
@@ -222,7 +222,7 @@
         En máquina tierra:  
         ```
         cp /etc/bind/named.conf.local /etc/files/tierra/  
-        cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/    
+        cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/  
         ```  
         En máquina venus:  
         ``` 
@@ -233,27 +233,27 @@
         cp -v /files/venus/named.conf.local /etc/bind  
         ```
 
-6. El tiempo en caché de las respuestas negativas de las zonas (directa e inversa) será de dos horas (se pone en segundos).
+### 6. El tiempo en caché de las respuestas negativas de las zonas (directa e inversa) será de dos horas (se pone en segundos).
 
 
 
-7. Aquellas consultas que reciba el servidor para la que no está autorizado, deberá reenviarlas (forward) al servidor DNS 208.67.222.222 (OpenDNS).
+### 7. Aquellas consultas que reciba el servidor para la que no está autorizado, deberá reenviarlas (forward) al servidor DNS 208.67.222.222 (OpenDNS).
 
 
 
-8. Se configurarán los siguientes alias:
-    a. ns1.sistema.test. será un alias de tierra.sistema.test.
+### 8. Se configurarán los siguientes alias:
+    ### a. ns1.sistema.test. será un alias de tierra.sistema.test.
 
 
 
-    b. ns2.sistema.test. será un alias de venus.sistema.test.
+    ### b. ns2.sistema.test. será un alias de venus.sistema.test.
 
 
 
-9. mail.sistema.test. será un alias de marte.sistema.test.
+### 9. mail.sistema.test. será un alias de marte.sistema.test.
 
 
 
-10. El equipo marte.sistema.test. actuará como servidor de correo del dominio de correo sistema.test.
+### 10. El equipo marte.sistema.test. actuará como servidor de correo del dominio de correo sistema.test.
 
 
