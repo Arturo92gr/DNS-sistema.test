@@ -3,20 +3,23 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "debian/bookworm64"
-  # config.vbguest.auto_update = false
+  config.vm.synced_folder "files", "/etc/files"
   config.ssh.insert_key = false
 
   # Master DNS
   config.vm.define "tierra" do |tierra|
     tierra.vm.hostname = "tierra.sistema.test"
     tierra.vm.network "private_network", ip: "192.168.57.103"
-    master.vm.provision "shell", inline: <<-SHELL
+    tierra.vm.provision "shell", inline: <<-SHELL
       apt-get update
       apt-get install -y bind9 dnsutils
     SHELL
+    tierra.vm.provision "shell", inline: <<-SHELL
+      cp -v /files/named /etc/default 
+    SHELL
   end #master
 
-  # Client DNS
+  # Slave DNS
   config.vm.define "venus" do |venus|
     venus.vm.hostname = "venus.sistema.test"
     venus.vm.network "private_network", ip: "192.168.57.102"
@@ -24,6 +27,6 @@ Vagrant.configure("2") do |config|
       apt-get update
       apt-get install -y dnsutils
     SHELL
-  end #client
+  end #slave
 
 end
