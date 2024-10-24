@@ -1,18 +1,19 @@
+acl confiables {
+	127.0.0.0/8;
+	192.168.57.0/24;
+};
+
 options {
 	directory "/var/cache/bind";
-
-	// If there is a firewall between you and nameservers you want
-	// to talk to, you may need to fix the firewall to allow multiple
-	// ports to talk.  See http://www.kb.cert.org/vuls/id/800113
-
-	// If your ISP provided one or more IP addresses for stable 
-	// nameservers, you probably want to use them as forwarders.  
-	// Uncomment the following block, and insert the addresses replacing 
-	// the all-0's placeholder.
 
 	// forwarders {
 	// 	0.0.0.0;
 	// };
+
+	listen-on port 53 { 192.168.57.103; };
+
+	recursion yes;
+	allow-recursion { confiables; };
 
 	//========================================================================
 	// If BIND logs error messages about the root key being expired,
@@ -20,5 +21,5 @@ options {
 	//========================================================================
         dnssec-validation yes;
 
-	listen-on-v6 { any; };
+	//listen-on-v6 { any; };
 };
