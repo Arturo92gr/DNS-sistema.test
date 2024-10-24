@@ -25,6 +25,7 @@
     En el servidor Tierra:  
     Primeramente, realizar una copia de seguridad: `sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup`  
     Se edita el archivo named.conf.options de la siguiente manera:  
+
     ```
     acl confiables {
         127.0.0.0/8;
@@ -49,6 +50,7 @@
         //listen-on-v6 { any; };
     };
     ```
+    
     Para comprobar si es correcta la configuración:  
     `named-checkconf /etc/bind/named.conf.options`  
     Por último, se reinicia el servidor y se comprueba su estado:  
