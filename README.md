@@ -116,7 +116,7 @@
         86400 )     ; Negative Cache TTL  
     ;  
     @       IN      NS      debian.solarsystem.es.  
-    103     IN      PTR     debian.solarsystem.es.  
+    103     IN      PTR     tierra.sistema.test.  
     ```
     Comprobación: `sudo named-checkzone 57.168.192.in-addr.arpa /var/lib/bind/solarsystem.es.rev`  
     Reinicio del servidor DNS: `sudo systemctl restart bind9`  

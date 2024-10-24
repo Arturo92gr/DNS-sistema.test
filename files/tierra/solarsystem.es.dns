@@ -13,6 +13,10 @@ $TTL 86400
 debian.solarsystem.es.		IN      A       192.168.57.103
 solarsystem.es			IN	NS	dns1.solarsystem.es
 dns1.solarsystem.es		IN	A	192.168.57.102
+mercurio.sistema.test           IN      A       192.168.57.101
+venus.sistema.test              IN      A       192.168.57.102
+tierra.sistema.test             IN      A       192.168.57.103
+marte.sistema.test              IN      A       192.168.57.104
 ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
 ns2.sistema.test                IN      CNAME   dns1.solarsystem.es.
 marte.sistema.test		IN	A	192.168.57.104
