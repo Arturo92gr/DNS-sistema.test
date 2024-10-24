@@ -110,7 +110,7 @@
     ```
     Comprobación: `named-checkzone solarsystem.es /var/lib/bind/solarsystem.es.dns`
 
-    Para la zona directa se crea el archivo con el nombre indicado anteriormente en el siguiente directorio: `sudo nano /var/lib/bind/solarsystem.es.rev`  
+    Para la zona inversa se crea el archivo con el nombre indicado anteriormente en el siguiente directorio: `sudo nano /var/lib/bind/solarsystem.es.rev`  
     Se edita el archivo de la siguiente forma:
     ```
     ;  
@@ -127,7 +127,21 @@
     @       IN      NS      debian.solarsystem.es.  
     103     IN      PTR     debian.solarsystem.es.  
     ```
-    Comprobación: `named-checkzone solarsystem.es /var/lib/bind/solarsystem.es.rev`
+    Comprobación: `sudo named-checkzone 57.168.192.in-addr.arpa /var/lib/bind/solarsystem.es.rev`  
+    Reinicio del servidor DNS: `sudo systemctl restart bind9`  
+    Se copia los archivos a la carpeta compartida y se añaden a la provisión  
+        En máquina:  
+        ```
+        cp /etc/bind/named.conf.local /etc/files/  
+        cp /var/lib/bind/solarsystem.es.dns /etc/files/  
+        cp /var/lib/bind/solarsystem.es.rev /etc/files/  
+        ```
+        En provisión:  
+        ```
+        cp -v /files/named.conf.local /etc/bind  
+        cp -v /files/solarsystem.es.dns /var/lib  
+        cp -v /files/solarsystem.es.rev /var/lib
+        ```
 
 5. El servidor esclavo será venus.sistema.test y tendrá como maestro a tierra.sistema.test.
 
