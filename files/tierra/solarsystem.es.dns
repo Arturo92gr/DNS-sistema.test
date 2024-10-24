@@ -7,7 +7,7 @@ $TTL 86400
         3600        ; Refresh
         1800        ; Retry
         604800      ; Expire
-	86400 )     ; Negative Cache TTL
+	7200 )     ; Negative Cache TTL
 ;
 @				IN      NS      debian.solarsystem.es.
 debian.solarsystem.es.		IN      A       192.168.57.103

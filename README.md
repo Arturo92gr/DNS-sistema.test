@@ -9,6 +9,7 @@
         sudo nano named
         ``` 
         Se cambia la línea: `OPTIONS="-u bind -4"`  
+        
     Se copia el archivo named a la capeta compartida para añadirlo a la provisión:  
         En máquina: `cp named /etc/files/tierra/`  
         En provisión: `cp -v /files/tierra/named /etc/default`  
@@ -235,7 +236,14 @@
 
 ### 6. El tiempo en caché de las respuestas negativas de las zonas (directa e inversa) será de dos horas (se pone en segundos).
 
-
+    En Tierra se editan los archivos `solarsystem.es.dns` y `solarsystem.es.rev` en la siguiente línea:  
+        `7200 )      ; Negative Cache TTL`  
+    Se reinicia bind para aplicar cambios: `sudo systemctl restart bind9`  
+    Se copian los archivos a la carpeta compartida:
+        ```
+        cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/  
+        cp /var/lib/bind/solarsystem.es.rev /etc/files/tierra/  
+        ```  
 
 ### 7. Aquellas consultas que reciba el servidor para la que no está autorizado, deberá reenviarlas (forward) al servidor DNS 208.67.222.222 (OpenDNS).
 
