@@ -4,9 +4,8 @@
 1. Activa solamente la escucha del servidor para el protocolo IPv4.
 
     En el servidor Tierra:  
-
-        cd /etc/default  
-        sudo nano named  
+        `cd /etc/default`  
+        `sudo nano named`  
 
     Se cambia la línea:  
     `OPTIONS="-u bind -4"`   
@@ -25,6 +24,7 @@
     Se modifican las siguientes líneas:  
 
         dnssec-validation yes;  
+        
         //listen-on-v6 { any; };  
 
 3. Los servidores permitirán las consultas recursivas sólo a los ordenadores en la red 127.0.0.0/8 y en la red 192.168.57.0/24, para ello utilizarán la opción de listas de control de acceso o acl.  
@@ -68,10 +68,8 @@
     `named-checkconf /etc/bind/named.conf.options`  
 
     Por último, se reinicia el servidor y se comprueba su estado:  
-    ```
-    systemctl restart named  
-    systemctl status named  
-    ```
+    `systemctl restart named`  
+    `systemctl status named`  
     
     Se copia el archivo a la carpeta compartida y se añade a la provisión  
         En máquina:  
