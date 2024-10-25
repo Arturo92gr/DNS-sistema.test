@@ -4,15 +4,18 @@
 1. Activa solamente la escucha del servidor para el protocolo IPv4.
 
     En el servidor Tierra:  
-        <code>
+
         cd /etc/default  
         sudo nano named  
-        </code> 
-        Se cambia la línea: `OPTIONS="-u bind -4"`   
+
+    Se cambia la línea:  
+    `OPTIONS="-u bind -4"`   
         
     Se copia el archivo named a la capeta compartida para añadirlo a la provisión:  
-        En máquina: `cp named /etc/files/tierra/`  
-        En provisión: `cp -v /files/tierra/named /etc/default`  
+        En máquina:  
+        `cp named /etc/files/tierra/`  
+        En provisión:  
+        `cp -v /files/tierra/named /etc/default`  
 
 2. Establecer la opción dnssec-validation a yes  
 
@@ -20,10 +23,9 @@
     `sudo nano /etc/bind/named.conf.options`  
     
     Se modifican las siguientes líneas:  
-        <code>
+
         dnssec-validation yes;  
         //listen-on-v6 { any; };  
-        </code> 
 
 3. Los servidores permitirán las consultas recursivas sólo a los ordenadores en la red 127.0.0.0/8 y en la red 192.168.57.0/24, para ello utilizarán la opción de listas de control de acceso o acl.  
 
@@ -37,22 +39,27 @@
         127.0.0.0/8;
         192.168.57.0/24;
     };
+
     options {
         directory "/var/cache/bind";
         // forwarders {
         //      0.0.0.0;
         // };
+
         // Para tierra:
         listen-on port 53 { 192.168.57.103; };
         // Para venus:
         // listen-on port 53 { 192.168.57.102; };
+
         recursion yes;
         allow-recursion { confiables; };
+
         //========================================================================
         // If BIND logs error messages about the root key being expired,
         // you will need to update your keys.  See https://www.isc.org/bind-keys
         //========================================================================
         dnssec-validation yes;
+        
         //listen-on-v6 { any; };
     };
     ```
@@ -67,8 +74,10 @@
     ```
     
     Se copia el archivo a la carpeta compartida y se añade a la provisión  
-        En máquina: `cp /etc/bind/named.conf.options /etc/files/tierra/`  
-        En provisión: `cp -v /files/tierra/named.conf.options /etc/bind`
+        En máquina:  
+        `cp /etc/bind/named.conf.options /etc/files/tierra/`  
+        En provisión:  
+        `cp -v /files/tierra/named.conf.options /etc/bind`
 
 4. El servidor maestro será tierra.sistema.test y tendrá autoridad sobre la zona directa e inversa.
 
@@ -86,10 +95,12 @@
     // Consider adding the 1918 zones here, if they are not used in your  
     // organization  
     //include "/etc/bind/zones.rfc1918";
+    
     zone "solarsystem.es" {  
         type master;  
         file "/var/lib/bind/solarsystem.es.dns";  
     };
+
     zone "57.168.192.in-addr-arpa" {  
         type master;  
         file "/var/lib/bind/solarsystem.es.rev";  
@@ -149,17 +160,13 @@
     
     Se copia los archivos a la carpeta compartida y se añaden a la provisión  
         En máquina:  
-        <code>
-        cp /etc/bind/named.conf.local /etc/files/tierra/  
-        cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/  
-        cp /var/lib/bind/solarsystem.es.rev /etc/files/tierra/
-        </code>  
+        `cp /etc/bind/named.conf.local /etc/files/tierra/`  
+        `cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/`  
+        `cp /var/lib/bind/solarsystem.es.rev /etc/files/tierra/`  
         En provisión:  
-        <code>
-        cp -v /files/tierra/named.conf.local /etc/bind  
-        cp -v /files/tierra/solarsystem.es.dns /var/lib  
-        cp -v /files/tierra/solarsystem.es.rev /var/lib
-        </code>
+        `cp -v /files/tierra/named.conf.local /etc/bind`  
+        `cp -v /files/tierra/solarsystem.es.dns /var/lib`  
+        `cp -v /files/tierra/solarsystem.es.rev /var/lib`
 
 5. El servidor esclavo será venus.sistema.test y tendrá como maestro a tierra.sistema.test.  
 
@@ -173,11 +180,13 @@
     // Consider adding the 1918 zones here, if they are not used in your
     // organization
     //include "/etc/bind/zones.rfc1918";
+
     zone "solarsystem.es" {
         type slave;
         masters { 192.168.57.103; };
         file "/var/lib/bind/solarsystem.es.dns";
     };
+
     zone "57.168.192.in-addr-arpa" {
         type slave;
         masters { 192.168.57.103; };
@@ -198,12 +207,14 @@
     // Consider adding the 1918 zones here, if they are not used in your
     // organization
     //include "/etc/bind/zones.rfc1918";
+
     zone "solarsystem.es" {
         type master;
         file "/var/lib/bind/solarsystem.es.dns";  
         allow-transfer { 192.168.57.102; };
         notify yes;
     };   
+
     zone "57.168.192.in-addr-arpa" {
         type master;
         file "/var/lib/bind/solarsystem.es.rev";
@@ -237,18 +248,12 @@
 
     Se copia los archivos a la carpeta compartida y se añaden a la provisión:  
         En máquina tierra:  
-        <code>
-        cp /etc/bind/named.conf.local /etc/files/tierra/  
-        cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/  
-        </code>
+        `cp /etc/bind/named.conf.local /etc/files/tierra/`  
+        `cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/`  
         En máquina venus:  
-        ``` 
-        cp /etc/bind/named.conf.local /etc/files/venus/  
-        ```  
+        `cp /etc/bind/named.conf.local /etc/files/venus/`   
         En provisión venus:  
-        ```
-        cp -v /files/venus/named.conf.local /etc/bind  
-        ```
+        `cp -v /files/venus/named.conf.local /etc/bind`  
 
 6. El tiempo en caché de las respuestas negativas de las zonas (directa e inversa) será de dos horas (se pone en segundos).  
 
@@ -259,10 +264,8 @@
     `sudo systemctl restart bind9`  
 
     Se copian los archivos a la carpeta compartida:  
-        <code>
-        cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/  
-        cp /var/lib/bind/solarsystem.es.rev /etc/files/tierra/  
-        </code>  
+        `cp /var/lib/bind/solarsystem.es.dns /etc/files/tierra/`  
+        `cp /var/lib/bind/solarsystem.es.rev /etc/files/tierra/`  
 
 7. Aquellas consultas que reciba el servidor para la que no está autorizado, deberá reenviarlas (forward) al servidor DNS 208.67.222.222 (OpenDNS).  
 
@@ -270,11 +273,10 @@
         `sudo nano /etc/bind/named.conf.options`  
 
     Se descomentan y editan las siguiente líneas:  
-        <code>
+
         forwarders {  
             208.67.222.222;  
         };  
-        </code>  
 
     Se copia el archivo a la carpeta compartida:  
         `cp /etc/bind/named.conf.options /etc/files/tierra/`  
