@@ -289,7 +289,7 @@
     ;
     ; solarsystem.es
     ;
-    $TTL 86400
+    $TTL 7200
     @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
         2024102402  ; Serial
         3600        ; Refresh
@@ -317,7 +317,7 @@
     ;
     ; solarsystem.es
     ;
-    $TTL 86400
+    $TTL 7200
     @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
         2024102403  ; Serial
         3600        ; Refresh
@@ -351,7 +351,7 @@
     ;
     ; solarsystem.es
     ;
-    $TTL 86400
+    $TTL 7200
     @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
         2024102404  ; Serial
         3600        ; Refresh
@@ -386,7 +386,7 @@
     ;
     ; solarsystem.es
     ;
-    $TTL 86400
+    $TTL 7200
     @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
         2024102405  ; Serial
         3600        ; Refresh

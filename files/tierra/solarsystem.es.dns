@@ -1,7 +1,7 @@
 ;
 ; solarsystem.es
 ;
-$TTL 86400
+$TTL 7200
 @ IN SOA debian.solarsystem.es. admin.solarsystem.es. (
         2024102405  ; Serial
         3600        ; Refresh
@@ -17,7 +17,7 @@ mercurio.sistema.test           IN      A       192.168.57.101
 venus.sistema.test              IN      A       192.168.57.102
 tierra.sistema.test             IN      A       192.168.57.103
 marte.sistema.test              IN      A       192.168.57.104
-ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
+ns1.sistema.test                IN      CNAME   tierra.sistema.test.
 ns2.sistema.test                IN      CNAME   dns1.solarsystem.es.
 mail.sistema.test		IN	CNAME	marte.sistema.test.
 sistema.test                    IN      MX	mail.sistema.test.
