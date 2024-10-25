@@ -19,6 +19,5 @@ tierra.sistema.test             IN      A       192.168.57.103
 marte.sistema.test              IN      A       192.168.57.104
 ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
 ns2.sistema.test                IN      CNAME   dns1.solarsystem.es.
-marte.sistema.test		IN	A	192.168.57.104
 mail.sistema.test		IN	CNAME	marte.sistema.test.
 sistema.test                    IN      MX	mail.sistema.test.
