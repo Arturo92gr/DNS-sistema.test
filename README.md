@@ -346,7 +346,7 @@
 
     `sudo nano /var/lib/bind/solarsystem.es.dns`
 
-    Se incrementa el número de serie para notificar la acutalización y se añade el registro A y CNAME para marte:
+    Se incrementa el número de serie para notificar la acutalización y se añade el registro CNAME para marte:
     ```
     ;
     ; solarsystem.es
@@ -369,7 +369,6 @@
     dns1.solarsystem.es             IN      A       192.168.57.102
     ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
     ns2.sistema.test                IN      CNAME   dns1.solarsystem.es.  
-    marte.sistema.test              IN      A       192.168.57.104
     mail.sistema.test               IN      CNAME   marte.sistema.test
     ```
     Reinicio del servicio:  
@@ -405,7 +404,6 @@
     dns1.solarsystem.es             IN      A       192.168.57.102
     ns1.sistema.test                IN      CNAME   debian.solarsystem.es.
     ns2.sistema.test                IN      CNAME   dns1.solarsystem.es.  
-    marte.sistema.test              IN      A       192.168.57.104
     mail.sistema.test               IN      CNAME   marte.sistema.test.
     sistema.test                    IN      MX      mail.sistema.test.
     ```
